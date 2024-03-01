@@ -20,6 +20,7 @@
     "@babel/preset-react": "^7.23.3",
     "@babel/runtime": "^7.20.0",
     "@testing-library/react": "^14.2.1",
+    "@types/lodash": "^4.14.202",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.19",
     "@types/react-test-renderer": "^18.0.0",
@@ -41,5 +42,9 @@
     "dist",
     "!dist/*.test.d.ts",
     "src/index.tsx"
-  ]
+  ],
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "use-context-selector": "^1.4.1"
+  }
 }
