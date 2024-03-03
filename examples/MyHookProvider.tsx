@@ -22,3 +22,16 @@ export const {
   useSelectorDeepEquals: useMyHookDeepSelector,
   useStrictSelectorDeepEquals: useStrictMyHookDeepSelector,
 } = createHookContext(useMyHook);
+
+function MyApp() {
+  return (
+    <MyHookProvider>
+      <Name />
+    </MyHookProvider>
+  );
+}
+
+function Name() {
+  const name = useMyHookSelector((x) => x.name);
+  return <p>{name}</p>;
+}
