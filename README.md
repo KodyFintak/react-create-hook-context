@@ -33,6 +33,7 @@ export function useMyHook(props: MyHookProps = {name: "Kody"}) {
 export const {
     Context: MyHookContext,
     Provider: MyHookProvider,
+    useContext: useMyHookContext,
     useSelector: useMyHookSelector,
     useStrictSelector: useStrictMyHookSelector,
     useSelectorDeepEquals: useMyHookDeepSelector,
