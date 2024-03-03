@@ -1,10 +1,25 @@
-import { PropsWithChildren } from "react";
-import { renderHook, RenderHookResult } from "@testing-library/react";
-import { createHookContextFor } from "../HookContext";
+import React, { PropsWithChildren } from "react";
+import "@testing-library/jest-dom";
+import { render, renderHook, RenderHookResult } from "@testing-library/react";
 import { useContext } from "use-context-selector";
+import {
+  MyHookContext,
+  MyHookProvider,
+  useMyHookDeepSelector,
+  useMyHookSelector,
+} from "../../examples/MyHookProvider";
 
 describe("createHookContext", () => {
-  describe("with default name", () => {
+  it("provider renders children", () => {
+    const screen = render(
+      <MyHookProvider>
+        <p>Hello</p>
+      </MyHookProvider>,
+    );
+    screen.getByText("Hello");
+  });
+
+  describe("with no hookParam prop", () => {
     it("gets hook value from raw Context", () => {
       const hookResult = renderWithMyHookProvider(() =>
         useContext(MyHookContext),
@@ -27,17 +42,22 @@ describe("createHookContext", () => {
     });
   });
 
-  it("passes name to hook", () => {
-    const wrapper = (props: PropsWithChildren) => (
-      <MyHookProvider hookParams={{ name: "John" }}>
-        {props.children}
-      </MyHookProvider>
-    );
-    const hookResult = renderHook(
-      () => useMyHookSelector((myHook) => myHook.name),
-      { wrapper },
-    );
-    expect(hookResult.result.current).toEqual("John");
+  describe("with hookParam passed as prop", () => {
+    it("passes name to hook", () => {
+      const hookResult = renderWithMyHookProviderWithName(
+        () => useMyHookSelector((myHook) => myHook.name),
+        "John",
+      );
+      expect(hookResult.result.current).toEqual("John");
+    });
+
+    it("uses hook function", () => {
+      const hookResult = renderWithMyHookProviderWithName(
+        () => useMyHookSelector((myHook) => myHook.sayHello()),
+        "John",
+      );
+      expect(hookResult.result.current).toEqual("Hello John");
+    });
   });
 });
 
@@ -48,16 +68,12 @@ function renderWithMyHookProvider<T>(hook: () => T): RenderHookResult<T, any> {
   return renderHook(hook, { wrapper });
 }
 
-function useMyHook(props: { name: string } = { name: "Kody" }) {
-  return {
-    name: props.name,
-    sayHello: () => "Hello Kody",
-  };
+function renderWithMyHookProviderWithName<T>(
+  hook: () => T,
+  name: string,
+): RenderHookResult<T, any> {
+  const wrapper = (props: PropsWithChildren) => (
+    <MyHookProvider hookParams={{ name }}>{props.children}</MyHookProvider>
+  );
+  return renderHook(hook, { wrapper });
 }
-
-const {
-  Context: MyHookContext,
-  Provider: MyHookProvider,
-  useSelector: useMyHookSelector,
-  useSelectorDeepEquals: useMyHookDeepSelector,
-} = createHookContextFor(useMyHook);
