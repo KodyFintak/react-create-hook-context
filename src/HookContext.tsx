@@ -31,7 +31,7 @@ export interface HookContext<T, P> {
 type HookFunction<T> = () => T;
 type HookFunctionWithParam<T, P> = (param: P) => T;
 
-export function createHookContextFor<T, P>(
+export function createHookContext<T, P>(
   hook: HookFunction<T> | HookFunctionWithParam<T, P>,
 ): HookContext<T, P> {
   const Context = createContext<T | undefined>(undefined);

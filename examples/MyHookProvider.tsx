@@ -1,4 +1,4 @@
-import { createHookContextFor } from "../src/HookContext";
+import { createHookContext } from "../src/HookContext";
 
 export interface MyHookProps {
   name: string;
@@ -21,4 +21,4 @@ export const {
   useStrictSelector: useStrictMyHookSelector,
   useSelectorDeepEquals: useMyHookDeepSelector,
   useStrictSelectorDeepEquals: useStrictMyHookDeepSelector,
-} = createHookContextFor(useMyHook);
+} = createHookContext(useMyHook);
