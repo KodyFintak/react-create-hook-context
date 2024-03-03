@@ -11,7 +11,10 @@ export interface HookContext<T, P> {
   Context: Context<T | undefined>;
   Provider: (props: PropsWithChildren<{ hookParams?: P }>) => JSX.Element;
   useSelector: <R>(selector: (contextValue: T) => R) => R;
-  useSelectorDeepEquals: <R>(selector: (contextValue: T) => R) => R;
+  useSelectorDeepEquals: <R>(
+    selector: (contextValue: T) => R,
+    isEqual?: <R>(a: R | null, b: R) => boolean,
+  ) => R;
 }
 
 type HookFunction<T> = () => T;
@@ -19,7 +22,6 @@ type HookFunctionWithParam<T, P> = (param: P) => T;
 
 export function createHookContextFor<T, P>(
   hook: HookFunction<T> | HookFunctionWithParam<T, P>,
-  isEqual: <R>(a: R | null, b: R) => boolean = lodashEqual,
 ): HookContext<T, P> {
   const Context = createContext<T | undefined>(undefined);
 
@@ -34,7 +36,10 @@ export function createHookContextFor<T, P>(
     });
   }
 
-  function useSelectorDeepEquals<R>(selector: (contextValue: T) => R): R {
+  function useSelectorDeepEquals<R>(
+    selector: (contextValue: T) => R,
+    isEqual: <R>(a: R | null, b: R) => boolean = lodashEqual,
+  ): R {
     return useEqualContextSelector(
       Context,
       (contextValue: T | undefined) => {
