@@ -36,15 +36,22 @@ export function createHookContextFor<T, P>(
 ): HookContext<T, P> {
   const Context = createContext<T | undefined>(undefined);
 
+  function runSelectorIfInsideProvider<T, R>(
+    contextValue: T | undefined,
+    selector: (contextValue: T) => R,
+  ) {
+    if (contextValue === undefined) {
+      throw new Error(
+        "selector must be used inside of a Provider, otherwise it will not function correctly",
+      );
+    }
+    return selector(contextValue);
+  }
+
   function useSelector<R>(selector: (contextValue: T) => R): R {
-    return useContextSelector(Context, (contextValue: T | undefined) => {
-      if (contextValue === undefined) {
-        throw new Error(
-          "selector must be used inside of a Provider, otherwise it will not function correctly",
-        );
-      }
-      return selector(contextValue);
-    });
+    return useContextSelector(Context, (contextValue: T | undefined) =>
+      runSelectorIfInsideProvider(contextValue, selector),
+    );
   }
 
   function useStrictSelector<R>(
@@ -59,14 +66,8 @@ export function createHookContextFor<T, P>(
   ): R {
     return useEqualContextSelector(
       Context,
-      (contextValue: T | undefined) => {
-        if (contextValue === undefined) {
-          throw new Error(
-            "selector must be used inside of a Provider, otherwise it will not function correctly",
-          );
-        }
-        return selector(contextValue);
-      },
+      (contextValue: T | undefined) =>
+        runSelectorIfInsideProvider(contextValue, selector),
       isEqual,
     );
   }
