@@ -6,6 +6,7 @@ import {
   defaultAddress,
   MyHookContext,
   MyHookProvider,
+  useMyHookContext,
   useMyHookDeepSelector,
   useMyHookSelector,
   useStrictMyHookDeepSelector,
@@ -28,6 +29,11 @@ describe("createHookContext", () => {
         useContext(MyHookContext),
       );
       expect(hookResult.result.current?.name).toEqual("Kody");
+    });
+
+    it("gets hook value", () => {
+      const hookResult = renderWithMyHookProvider(useMyHookContext);
+      expect(hookResult.result.current.name).toEqual("Kody");
     });
 
     it("selects value from context", () => {

@@ -2,6 +2,7 @@ import React, { PropsWithChildren } from "react";
 import {
   Context,
   createContext,
+  useContext,
   useContextSelector,
 } from "use-context-selector";
 import { isEqual as lodashEqual } from "lodash";
@@ -14,6 +15,7 @@ import {
 export interface HookContext<T, P> {
   Context: Context<T | undefined>;
   Provider: (props: PropsWithChildren<{ hookParams?: P }>) => JSX.Element;
+  useContext: () => T;
   useSelector: <R>(selector: (contextValue: T) => R) => R;
   useSelectorDeepEquals: <R>(
     selector: (contextValue: T) => R,
@@ -46,6 +48,16 @@ export function createHookContext<T, P>(
       );
     }
     return selector(contextValue);
+  }
+
+  function useHookContext(): T {
+    const contextValue = useContext(Context);
+    if (contextValue === undefined) {
+      throw new Error(
+        "selector must be used inside of a Provider, otherwise it will not function correctly",
+      );
+    }
+    return contextValue;
   }
 
   function useSelector<R>(selector: (contextValue: T) => R): R {
@@ -89,6 +101,7 @@ export function createHookContext<T, P>(
   return {
     Context,
     Provider,
+    useContext: useHookContext,
     useSelector,
     useSelectorDeepEquals,
     useStrictSelector,
