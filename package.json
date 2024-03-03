@@ -1,7 +1,7 @@
 {
   "name": "react-create-hook-context",
   "description": "Easily create React Context for React Hook",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Kody Fintak",
   "repository": "https://github.com/KodyFintak/react-create-hook-context",
   "main": "dist/index.js",
