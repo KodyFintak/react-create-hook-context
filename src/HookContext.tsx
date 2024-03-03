@@ -6,6 +6,10 @@ import {
 } from "use-context-selector";
 import { isEqual as lodashEqual } from "lodash";
 import { useEqualContextSelector } from "./useEqualContextSelector";
+import {
+  EqualitySelectorResult,
+  PrimitiveSelectorResult,
+} from "./SelectorResult";
 
 export interface HookContext<T, P> {
   Context: Context<T | undefined>;
@@ -13,6 +17,13 @@ export interface HookContext<T, P> {
   useSelector: <R>(selector: (contextValue: T) => R) => R;
   useSelectorDeepEquals: <R>(
     selector: (contextValue: T) => R,
+    isEqual?: <R>(a: R | null, b: R) => boolean,
+  ) => R;
+  useStrictSelector: <R>(
+    selector: (contextValue: T) => PrimitiveSelectorResult<R>,
+  ) => R;
+  useStrictSelectorDeepEquals: <R>(
+    selector: (contextValue: T) => EqualitySelectorResult<R>,
     isEqual?: <R>(a: R | null, b: R) => boolean,
   ) => R;
 }
@@ -36,6 +47,12 @@ export function createHookContextFor<T, P>(
     });
   }
 
+  function useStrictSelector<R>(
+    selector: (contextValue: T) => PrimitiveSelectorResult<R>,
+  ): R {
+    return useSelector(selector);
+  }
+
   function useSelectorDeepEquals<R>(
     selector: (contextValue: T) => R,
     isEqual: <R>(a: R | null, b: R) => boolean = lodashEqual,
@@ -54,6 +71,13 @@ export function createHookContextFor<T, P>(
     );
   }
 
+  function useStrictSelectorDeepEquals<R>(
+    selector: (contextValue: T) => EqualitySelectorResult<R>,
+    isEqual: <R>(a: R | null, b: R) => boolean = lodashEqual,
+  ): R {
+    return useSelectorDeepEquals(selector, isEqual);
+  }
+
   function Provider(props: PropsWithChildren<{ hookParams?: P }>) {
     const value = props.hookParams
       ? hook(props.hookParams)
@@ -66,5 +90,7 @@ export function createHookContextFor<T, P>(
     Provider,
     useSelector,
     useSelectorDeepEquals,
+    useStrictSelector,
+    useStrictSelectorDeepEquals,
   };
 }

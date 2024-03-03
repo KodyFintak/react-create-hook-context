@@ -3,10 +3,13 @@ import "@testing-library/jest-dom";
 import { render, renderHook, RenderHookResult } from "@testing-library/react";
 import { useContext } from "use-context-selector";
 import {
+  defaultAddress,
   MyHookContext,
   MyHookProvider,
   useMyHookDeepSelector,
   useMyHookSelector,
+  useStrictMyHookDeepSelector,
+  useStrictMyHookSelector,
 } from "../../examples/MyHookProvider";
 
 describe("createHookContext", () => {
@@ -39,6 +42,22 @@ describe("createHookContext", () => {
         useMyHookDeepSelector((myHook) => myHook.name),
       );
       expect(hookResult.result.current).toEqual("Kody");
+    });
+
+    describe("strict selectors", () => {
+      it("selects primitive value from context", () => {
+        const hookResult = renderWithMyHookProvider(() =>
+          useStrictMyHookSelector((myHook) => myHook.name),
+        );
+        expect(hookResult.result.current).toEqual("Kody");
+      });
+
+      it("selects deep equal value from context", () => {
+        const hookResult = renderWithMyHookProvider(() =>
+          useStrictMyHookDeepSelector((myHook) => myHook.address),
+        );
+        expect(hookResult.result.current).toEqual(defaultAddress);
+      });
     });
   });
 
