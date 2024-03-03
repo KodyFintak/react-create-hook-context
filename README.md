@@ -58,5 +58,3 @@ function Name() {
     return <p>{name}</p>;
 }
 ```
-
-## Documentation
