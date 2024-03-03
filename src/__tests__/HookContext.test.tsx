@@ -4,25 +4,40 @@ import { createHookContextFor } from "../HookContext";
 import { useContext } from "use-context-selector";
 
 describe("createHookContext", () => {
-  it("gets hook value from raw Context", () => {
-    const hookResult = renderWithMyHookProvider(() =>
-      useContext(MyHookContext),
-    );
-    expect(hookResult.result.current?.name).toEqual("Kody");
+  describe("with default name", () => {
+    it("gets hook value from raw Context", () => {
+      const hookResult = renderWithMyHookProvider(() =>
+        useContext(MyHookContext),
+      );
+      expect(hookResult.result.current?.name).toEqual("Kody");
+    });
+
+    it("selects value from context", () => {
+      const hookResult = renderWithMyHookProvider(() =>
+        useMyHookSelector((myHook) => myHook.name),
+      );
+      expect(hookResult.result.current).toEqual("Kody");
+    });
+
+    it("selects deep equal from context", () => {
+      const hookResult = renderWithMyHookProvider(() =>
+        useMyHookDeepSelector((myHook) => myHook.name),
+      );
+      expect(hookResult.result.current).toEqual("Kody");
+    });
   });
 
-  it("selects value from context", () => {
-    const hookResult = renderWithMyHookProvider(() =>
-      useMyHookSelector((myHook) => myHook.name),
+  it("passes name to hook", () => {
+    const wrapper = (props: PropsWithChildren) => (
+      <MyHookProvider hookParams={{ name: "John" }}>
+        {props.children}
+      </MyHookProvider>
     );
-    expect(hookResult.result.current).toEqual("Kody");
-  });
-
-  it("selects deep equal from context", () => {
-    const hookResult = renderWithMyHookProvider(() =>
-      useMyHookDeepSelector((myHook) => myHook.name),
+    const hookResult = renderHook(
+      () => useMyHookSelector((myHook) => myHook.name),
+      { wrapper },
     );
-    expect(hookResult.result.current).toEqual("Kody");
+    expect(hookResult.result.current).toEqual("John");
   });
 });
 
@@ -33,9 +48,9 @@ function renderWithMyHookProvider<T>(hook: () => T): RenderHookResult<T, any> {
   return renderHook(hook, { wrapper });
 }
 
-function useMyHook() {
+function useMyHook(props: { name: string } = { name: "Kody" }) {
   return {
-    name: "Kody",
+    name: props.name,
     sayHello: () => "Hello Kody",
   };
 }
